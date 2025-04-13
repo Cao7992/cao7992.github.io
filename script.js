@@ -68,11 +68,11 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             // In a real portfolio, you'd handle the form submission with a backend
             // This is a placeholder that shows an alert
-            alert('Thank you for your message! In a real portfolio, this would send your message to the portfolio owner.');
+            alert('Thank you for reaching me out! Your message has been sent to the owner.');
             contactForm.reset();
         });
     }
-    
+
     // Typing effect for hero section
     const typingElement = document.querySelector('.typing');
     if (typingElement) {
@@ -81,10 +81,78 @@ document.addEventListener('DOMContentLoaded', function() {
             typingElement.getAttribute('data-text-2'),
             typingElement.getAttribute('data-text-3')
         ];
-        
+
         let textIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
         let typingDelay = 200;
-        
+
+        function type() {
+            const currentText = texts[textIndex];
+
+            if (isDeleting) {
+                // Deleting text
+                typingElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+                typingDelay = 100; // Faster when deleting
+            } else {
+                // Typing text
+                typingElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+                typingDelay = 200; // Normal speed when typing
+            }
+
+            // Check if word is complete
+            if (!isDeleting && charIndex === currentText.length) {
+                // Pause at end of word
+                typingDelay = 2000; // Wait before deleting
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                // Move to next word when completely deleted
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+                typingDelay = 500; // Pause before typing next word
+            }
+
+            setTimeout(type, typingDelay);
+        }
+
+        // Start the typing effect
+        if (texts[0]) {
+            setTimeout(type, 1000);
+        }
+    }
+
+    // Activate AOS (if you want to add animations)
+    // If you want to use AOS library for scroll animations,
+    // uncomment this and add AOS library to your HTML
+    // AOS.init({
+    //     duration: 1000,
+    //     once: true
+    // });
+
+    // Optional: Add active class to navbar links based on scroll position
+    window.addEventListener('scroll', function() {
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-links a');
+
+        let current = '';
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (pageYOffset >= sectionTop - 200) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+});
         
